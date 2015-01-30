@@ -1,7 +1,7 @@
 {
   "name": "samesies",
   "main": "src/samesies.js",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "homepage": "https://github.com/standardpixel/samesies",
   "authors": [
     "eric@standardpixel.com"
