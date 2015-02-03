@@ -1,4 +1,4 @@
-(function(exports) {
+(function() {
   "use strict";
 
   function CartoDBClient() {
@@ -12,14 +12,14 @@
     // Request remote data
     //
     function request(uri, callback) {
-      if (window && window.XMLHttpRequest) {
+      if (options.XHR) {
         var xmlHttp = null;
 
-        xmlHttp = new window.XMLHttpRequest();
+        xmlHttp = new options.XHR();
 
         xmlHttp.onreadystatechange = function() {
-          if ((xmlHttp.readyState|0) === 4) {
-            if ((xmlHttp.status|0) === 200 ) {
+          if ((xmlHttp.readyState|0) === 4 /*Done*/) {
+            if ((xmlHttp.status | 0) === 200) {
 
               callback(null, xmlHttp);
             } else {
@@ -28,10 +28,10 @@
           }
         };
 
-        xmlHttp.open( "GET", uri, true );
-        return xmlHttp.send( null );
+        xmlHttp.open("GET", uri, true);
+        return xmlHttp.send();
       } else {
-        return false;
+        return callback(new Error('There is no XMLHttpRequest object available'));
       }
     }
 
@@ -43,7 +43,7 @@
 
       for (var i in data) {
         if (data.hasOwnProperty(i)) {
-          outString = outString.split("{"+i+"}").join(data[i]);
+          outString = outString.split("{" + i + "}").join(data[i]);
         }
       }
 
@@ -58,9 +58,9 @@
       return request(
         buildTemplate([
           options.apiroot,
-          options.remoteSQLMethod,
+          "sql",
           "?api_key=" + apiKey,
-          "&format=" + options.format, 
+          "&format=" + options.format,
           "&q=" + sql
         ].join(""), options),
         callback
@@ -72,17 +72,11 @@
       //
       // Set defaults
       //
-      apiKey      = _apiKey;
-      accountName = _accountName;
-
-      _options = _options || {};
-      _options.accountName     = _accountName;
-      _options.apiKey          = _apiKey;
-      _options.format          = _options.format          || "GeoJSON";
-      _options.apiroot         = _options.apiroot         || "http://{accountName}.cartodb.com/api/v2/";
-      _options.remoteSQLMethod = _options.remoteSQLMethod || "sql";
-
-      options = _options;
+      options.accountName     = _accountName;
+      options.apiKey          = _apiKey;
+      options.XHR             = _options.XHR              || ((typeof window === "object") ? window.XMLHttpRequest : null);
+      options.format          = _options.format           || "GeoJSON";
+      options.apiroot         = _options.apiroot          || "http://{accountName}.cartodb.com/api/v2/";
 
       return {
         "sqlRequest" : sqlRequest
@@ -98,16 +92,22 @@
 
   }
 
-  if (window.define) {
+  if (typeof define === "object" && define.amd) {
     //
     // Treat as an AMD module
     //
     define(CartoDBClient);
-  } else {
+
+  } else if (typeof module === 'object' && typeof module.exports === 'object') {
+
+    module.exports = CartoDBClient;
+
+  } else if (typeof window !== 'undefined') {
     //
     // Add to scope
     //
-    exports.CartoDBClient = CartoDBClient;
+
+    window.CartoDBClient = CartoDBClient;
   }
 
-}(typeof exports === "object" ? exports : window));
+}());
