@@ -1,15 +1,16 @@
 {
-  "name": "samesies",
-  "main": "src/samesies.js",
-  "version": "0.2.10",
-  "homepage": "https://github.com/standardpixel/samesies",
+  "name": "cartodb-client",
+  "main": "src/cartodb-client.js",
+  "version": "0.0.0",
+  "homepage": "https://github.com/stamen/cartodb-client",
   "authors": [
-    "eric@standardpixel.com"
+    "evg@stamen.com"
   ],
-  "description": "A simple mix-in with common interface components",
+  "description": "A simple client for the carto-db API",
   "keywords": [
-    "interface",
-    "events"
+    "cartodb",
+    "api",
+    "geo"
   ],
   "license": "ISC",
   "ignore": [

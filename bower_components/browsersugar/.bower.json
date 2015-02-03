@@ -1,0 +1,35 @@
+{
+  "name": "browsersugar",
+  "main": "src/browsersugar.js",
+  "homepage": "https://github.com/standardpixel/browsersugar",
+  "authors": [
+    "eric@standardpixel.com"
+  ],
+  "description": "A simple mix-in with tools for simplified use of common browser features",
+  "keywords": [
+    "interface",
+    "events",
+    "browser",
+    "XHR",
+    "API",
+    "DOM"
+  ],
+  "license": "ISC",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "813ef7c7a8",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "813ef7c7a8b1905fbe564b8f8c753a4fa6afa26b"
+  },
+  "_source": "git://github.com/standardpixel/browsersugar.git",
+  "_target": "*",
+  "_originalSource": "browsersugar",
+  "_direct": true
+}

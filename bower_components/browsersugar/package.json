@@ -1,26 +1,26 @@
 {
-  "name": "cartodb-client",
+  "name": "browsersugar",
   "version": "0.0.0",
-  "description": "A simple client for the carto-db API",
+  "description": "A simple mix-in with common interface components",
   "scripts": {
-    "test" : "mocha",
-    "start" : "gulp && gulp watch"
+    "test": "mocha",
+    "start": "gulp && gulp watch"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/stamen/cartodb-client.git"
+    "url": "git://github.com/standardpixel/samesies.git"
   },
   "keywords": [
     "interface",
     "client",
     "server"
   ],
-  "author": "evg@stamen.com",
+  "author": "eric@standardpixel.com",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/stamen/cartodb-client/issues"
+    "url": "https://github.com/standardpixel/samesies/issues"
   },
-  "homepage": "https://github.com/stamen/cartodb-client",
+  "homepage": "https://github.com/standardpixel/browsersugar",
   "dependencies": {
     "gulp": "~3.8.10",
     "gulp-watch": "~3.0.0",
