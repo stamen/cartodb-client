@@ -5,11 +5,15 @@ var gulp       = require('gulp'),
     jshint     = require('gulp-jshint'),
     uglify     = require('gulp-uglify'),
     sourcemaps = require('gulp-sourcemaps'),
-    wrap       = require('gulp-wrap');
+    wrap       = require('gulp-wrap'),
+    concat     = require("gulp-concat"),
+    run        = require("gulp-run");
+
+var appName = "cartodb-client";
 
 var paths = {
   js        : './src/*.js',
-  dist      : './dist'
+  dist      : './build'
 };
 
 //
@@ -26,20 +30,38 @@ gulp.task('lint', function() {
   .pipe(jshint.reporter('jshint-stylish'));
 });
 
-gulp.task('uglify', function() {
+gulp.task("uglify", function() {
+  return gulp
+    .src(paths.js)
+    .pipe(sourcemaps.init())
+    .pipe(concat(appName+'.js'))
+    .pipe(gulp.dest(paths.dist))
+    .pipe(uglify({
+      mangle: true,
+      output: {
+        beautify: false
+      }
+    }).on("error", function(e) {
+      console.log("Uglify error:\x07",e.message, " on line: ", e.lineNumber);
+      return this.end();
+    }))
+    .pipe(rename({extname: ".min.js"}))
+    .pipe(sourcemaps.write("./")) // Write a sourcemap for browser debugging
+    .pipe(gulp.dest(paths.dist));
+});
 
-  gulp.src(paths.js)
-  .pipe(sourcemaps.init())
-  .pipe(uglify())
-  .pipe(rename({extname: ".min.js"}))
-  .pipe(sourcemaps.write("./")) //Write a sourcemap for browser debugging
-  .pipe(gulp.dest(paths.dist))
+//
+// Cleanup
+//
+gulp.task("cleanup", function() {
+  return run("rm -rf ./build/*", {}).exec();
 });
 
 //
 // Run all default tasks
 //
 gulp.task('default',function(){
+  gulp.start('cleanup');
   gulp.start('lint');
   gulp.start('uglify');
 });

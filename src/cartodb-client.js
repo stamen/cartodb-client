@@ -1,25 +1,30 @@
 (function() {
   "use strict";
 
-  function CartoDBClient() {
+  function CartoDBClient(accountName, apiKey, options) {
 
-    var that    = this,
-        options = {},
-        apiKey, accountName;
+    options = options || {};
 
+    var that = this;
+
+    options.apiroot     = options.apiroot      || "http://{accountName}.cartodb.com/api/v2/";
+    options.format      = options.format       || "GeoJSON";
+    options.accountName = options.accountName  || accountName;
+    options.apiKey      = options.apiKey       || apiKey;
 
     //
     // Request remote data
     //
     function request(uri, callback) {
-      if (options.XHR) {
+
+      if (window && window.XMLHttpRequest) {
         var xmlHttp = null;
 
-        xmlHttp = new options.XHR();
+        xmlHttp = new window.XMLHttpRequest();
 
         xmlHttp.onreadystatechange = function() {
-          if ((xmlHttp.readyState|0) === 4 /*Done*/) {
-            if ((xmlHttp.status | 0) === 200) {
+          if ((xmlHttp.readyState|0) === 4) {
+            if ((xmlHttp.status|0) === 200 ) {
 
               callback(null, xmlHttp);
             } else {
@@ -28,10 +33,10 @@
           }
         };
 
-        xmlHttp.open("GET", uri, true);
-        return xmlHttp.send();
+        xmlHttp.open( "GET", uri, true );
+        return xmlHttp.send( null );
       } else {
-        return callback(new Error('There is no XMLHttpRequest object available'));
+        return false;
       }
     }
 
@@ -57,7 +62,7 @@
 
       return request(
         buildTemplate([
-          options.apiroot,
+          buildTemplate(options.apiroot, options),
           "sql",
           "?api_key=" + apiKey,
           "&format=" + options.format,
@@ -68,46 +73,46 @@
 
     }
 
-    function getClient(_accountName, _apiKey, _options) {
-      //
-      // Set defaults
-      //
-      options.accountName     = _accountName;
-      options.apiKey          = _apiKey;
-      options.XHR             = _options.XHR              || ((typeof window === "object") ? window.XMLHttpRequest : null);
-      options.format          = _options.format           || "GeoJSON";
-      options.apiroot         = _options.apiroot          || "http://{accountName}.cartodb.com/api/v2/";
-
-      return {
-        "sqlRequest" : sqlRequest
-      };
-    }
-
     //
-    // Public API methods
+    // Public interface
     //
-    return {
-      "getClient" : getClient
-    };
+    that.sqlRequest = sqlRequest;
+
+    return that;
 
   }
 
-  if (typeof define === "object" && define.amd) {
-    //
-    // Treat as an AMD module
-    //
-    define(CartoDBClient);
 
-  } else if (typeof module === 'object' && typeof module.exports === 'object') {
 
+  //
+  // If this is a CommonJS module
+  //
+  if (typeof module === "object" && module.exports) {
     module.exports = CartoDBClient;
+  }
 
-  } else if (typeof window !== 'undefined') {
-    //
-    // Add to scope
-    //
+  //
+  // If this is an AMD module
+  //
+  if (typeof define === "function") {
+    define(CartoDBClient);
+  }
 
-    window.CartoDBClient = CartoDBClient;
+  //
+  // If just exports and it's an object
+  //
+  if (typeof module !== "object" && typeof exports === "object") {
+    exports.CartoDBClient = CartoDBClient;
+  }
+
+  //
+  // If none of those, add it to Window (as long as there is nothing named samesies)
+  //
+  if (typeof define !== "function" && typeof window === "object") {
+    if (!window.STMN) {
+      window.STMN = {};
+    }
+    window.STMN.CartoDBClient = CartoDBClient;
   }
 
 }());

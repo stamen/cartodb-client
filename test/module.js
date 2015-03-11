@@ -8,6 +8,7 @@
     var CartodbClient = require("../src/cartodb-client.js");
 
     function getMockXHR(responsesType) {
+
       var responses = {
         goodXHRResponse : {
           "status" : 200,

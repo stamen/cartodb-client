@@ -1,6 +1,6 @@
 {
   "name": "cartodb-client",
-  "main": "src/cartodb-client.js",
+  "main": "build/cartodb-client.js",
   "version": "0.0.0",
   "homepage": "https://github.com/stamen/cartodb-client",
   "authors": [
