@@ -68,7 +68,15 @@
           "&format=" + options.format,
           "&q=" + sql
         ].join(""), options),
-        callback
+        function (err, response) {
+
+          try {
+            callback(err, JSON.parse(response.responseText), response);
+          } catch (err) {
+            callback(err, null, response);
+          }
+
+        }
       );
 
     }
