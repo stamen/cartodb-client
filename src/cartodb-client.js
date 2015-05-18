@@ -80,7 +80,7 @@
         buildTemplate([
           buildTemplate(options.apiroot, options),
           "sql",
-          "&format=" + options.format,
+          "?format=" + options.format,
           "&q=" + sql
         ].join(""), options),
         function (err, response) {
