@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  function CartoDBClient(accountName, apiKey, options) {
+  function CartoDBClient(accountName,options) {
 
     options = options || {};
 
@@ -10,7 +10,6 @@
     options.apiroot     = options.apiroot      || "http://{accountName}.cartodb.com/api/v2/";
     options.format      = options.format       || "GeoJSON";
     options.accountName = options.accountName  || accountName;
-    options.apiKey      = options.apiKey       || apiKey;
 
     //
     // Request remote data
@@ -58,13 +57,29 @@
     //
     // Request from the CartoDb SQL endpoint
     //
-    function sqlRequest(sql, callback) {
+    function sqlRequest(sql, callback, _options) {
+
+      _options = _options || {};
+
+      //
+      // Override defaults
+      //
+      if (Object.keys(_options).length) {
+        for (var i in _options) {
+
+          if (_options.hasOwnProperty(i)) {
+
+            options[i] = _options[i];
+
+          }
+
+        }
+      }
 
       return request(
         buildTemplate([
           buildTemplate(options.apiroot, options),
           "sql",
-          "?api_key=" + apiKey,
           "&format=" + options.format,
           "&q=" + sql
         ].join(""), options),
