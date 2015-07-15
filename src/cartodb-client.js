@@ -97,9 +97,121 @@
     }
 
     //
+    // Promise request
+    function requestPromise(params) {
+      var opts = normalizeOptions(params.options);
+
+      var url = (params.sql) ? buildTemplate([
+                  buildTemplate(opts.apiroot, opts),
+                  "sql",
+                  "?format=" + opts.format,
+                  "&q=" + params.sql
+                ].join(""), opts) : params.url;
+
+      var key = params.key;
+
+
+      return new Promise(function(resolve, reject) {
+
+        if (window && window.XMLHttpRequest) {
+          // Do the usual XHR stuff
+          var req = new XMLHttpRequest();
+          req.open('GET', url);
+
+          req.onload = function() {
+            // This is called even on 404 etc
+            // so check the status
+            if (req.status == 200) {
+              // Resolve the promise with the response text
+              return resolve({
+                payload: req.response || req.responseText,
+                id: key
+              });
+            }
+            else {
+              // Otherwise reject with the status text
+              // which will hopefully be a meaningful error
+              reject({
+                payload: Error(req.statusText),
+                id: key
+              });
+            }
+          };
+
+          // Handle network errors
+          req.onerror = function() {
+            reject({
+              payload: Error("Network Error"),
+              id: key
+            });
+          };
+
+          // Make the request
+          req.send();
+
+        } else {
+          reject({
+            payload: Error("XMLHttpRequest not supported"),
+            id: key
+          });
+        }
+      });
+
+
+
+    }
+
+    //
+    //
+    //
+    function normalizeOptions(_options) {
+      _options = _options || {};
+
+      var rsp = {};
+      for (var key in options) {
+        var value = (_options.hasOwnProperty(key)) ? _options[key] : options[key];
+        rsp[key] = value;
+      }
+
+      return rsp;
+    }
+
+    //
     // Public interface
     //
     that.sqlRequest = sqlRequest;
+    that.requestPromise = requestPromise;
+    that.requestPromiseParallel = function(queue) {
+      return Promise.all(
+        queue.map(function(q){
+          return requestPromise(q).then(function(rsp) {
+            return {
+              response: rsp,
+              key: rsp.id
+            };
+          }).catch(function(err) {
+            return err;
+          });
+        })
+      )
+    };
+
+    that.requestPromiseJSON = function(params) {
+      return requestPromise(params).then(function(rsp) {
+        return {
+          response: JSON.parse(rsp.payload),
+          key: rsp.id
+        };
+      }).catch(function(err) {
+        return err;
+      });
+    };
+
+    that.requestPromiseParallelJSON = function(queue) {
+      return Promise.all(
+        queue.map(that.requestPromiseJSON)
+      )
+    };
 
     return that;
 
