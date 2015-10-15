@@ -76,13 +76,19 @@
         }
       }
 
-      return request(
-        buildTemplate([
-          buildTemplate(options.apiroot, options),
-          "sql",
-          "?format=" + options.format,
-          "&q=" + sql
-        ].join(""), options),
+      var url = buildTemplate([
+        buildTemplate(options.apiroot, options),
+        "sql",
+        "?format=" + options.format,
+        "&q=" + sql
+      ].join(""), options);
+
+      if (options.dangerouslyExposedAPIKey) {
+        console.warn("Exposing API key in URL! Do not push this to production.");
+        url += ("&api_key=" + options.dangerouslyExposedAPIKey);
+      }
+
+      return request(url,
         function (err, response) {
 
           try {
